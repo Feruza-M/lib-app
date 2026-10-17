@@ -1,0 +1,13 @@
+# Terraform
+terraform/.terraform/
+terraform/*.tfstate
+terraform/*.tfstate.*
+terraform/tfplan
+
+# Secrets
+*.pem
+.env
+
+# Python
+__pycache__/
+*.pyc

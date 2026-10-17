@@ -1,0 +1,32 @@
+services:
+  db:
+    image: mariadb:11.8
+    container_name: library-db
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: library_db
+      MARIADB_USER: library_app
+      MARIADB_PASSWORD: secretlibrarypass
+      MARIADB_ROOT_PASSWORD: rootsecretpass
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build: .
+    container_name: library-app
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: mysql+pymysql://library_app:secretlibrarypass@db:3306/library_db?charset=utf8mb4
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  mariadb_data:
